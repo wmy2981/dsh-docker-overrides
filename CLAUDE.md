@@ -57,6 +57,6 @@ curl -s -o /dev/null -w '%{http_code}\n' http://192.168.1.100:6081/vnc.html # �
 
 `config/browser-launch.patch.yml` 由 Dockerfile 复制到 `/opt/deepseek-harness/`，compose 把它作为第二个 `--patch` 排在镜像那个之后，用同一个 id 覆盖浏览器自动化配置（镜像默认是 attach 接 VNC 桌面浏览器的独占模式，一个会话占住后其它会话拿不到浏览器工具）。改这个文件也要重建镜像。
 
-## 历史目录
+## 历史备份
 
-`migration/`（一次性 Desktop→Web 迁移快照）与 `overrides/`（已弃用的启动期安装方案）都已失效且不在版本控制内，不要修改也不要当参考；`backups/` 是历史备份，原样保留。
+`backups/` 是历史备份，原样保留。

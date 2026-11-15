@@ -8,9 +8,5 @@ dsh-home/
 workspace/
 backups/
 
-# 已废弃的历史目录
-migration/
-overrides/
-
 # scripts/notify-web-url.sh 的去重状态（含启动 token，不能进版本控制）
 .state/
