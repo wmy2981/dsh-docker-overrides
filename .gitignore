@@ -1,0 +1,13 @@
+# 个人本地指令文件，不进入版本控制
+CLAUDE.local.md
+
+# 本地配置与运行时数据
+.env
+home/
+dsh-home/
+workspace/
+backups/
+
+# 已废弃的历史目录
+migration/
+overrides/

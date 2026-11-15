@@ -1,0 +1,66 @@
+name: dsh
+
+services:
+  deepseek-harness:
+    image: ${LOCAL_IMAGE}
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: dsh
+    command:
+      - web
+      - --patch
+      - /opt/deepseek-harness/web.cordis.patch.yml
+      - --no-open
+      - --trusted-host
+      - ${DSH_BIND_ADDRESS}
+    ports:
+      - "${DSH_BIND_ADDRESS}:${DSH_PORT}:3080"
+      - "${DSH_BIND_ADDRESS}:${DSH_DESKTOP_PORT}:6080"
+    environment:
+      HOME: /home/node
+      DSH_HOME: /home/node/.dsh
+      DSH_TELEMETRY_DISABLED: "1"
+      DSH_DESKTOP_ENABLED: "1"
+      DSH_BROWSER_USE_ENABLED: "1"
+      DSH_DESKTOP_PUBLIC_PORT: ${DSH_DESKTOP_PORT}
+      DSH_WEB_RELAY_INTERFACE: ""
+      # 基础镜像默认把 XDG 目录放在 /tmp（重启即失），改到持久化的 $HOME 下；取值见 .env。
+      # XDG_RUNTIME_DIR 仍留在 /tmp：按规范它必须是每次登录重建的 tmpfs 目录。
+      XDG_CONFIG_HOME: ${DSH_XDG_CONFIG_HOME:-/home/node/.config}
+      XDG_DATA_HOME: ${DSH_XDG_DATA_HOME:-/home/node/.local/share}
+      XDG_CACHE_HOME: ${DSH_XDG_CACHE_HOME:-/home/node/.cache}
+      npm_config_store_dir: /home/node/.dsh/pnpm-store
+      npm_config_registry: ${NPM_REGISTRY}
+      PNPM_CONFIG_STORE_DIR: /home/node/.dsh/pnpm-store
+      NPM_CONFIG_REGISTRY: ${NPM_REGISTRY}
+      COREPACK_NPM_REGISTRY: ${NPM_REGISTRY}
+      PIP_INDEX_URL: ${PIP_INDEX_URL}
+      UV_DEFAULT_INDEX: ${PIP_INDEX_URL}
+      GOPROXY: ${GOPROXY}
+      GOSUMDB: ${GOSUMDB}
+    working_dir: /workspace
+    volumes:
+      - ./home:/home/node
+      - ./dsh-home:/home/node/.dsh
+      - ./workspace:/workspace
+    read_only: true
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,nodev,size=512m
+    shm_size: 1gb
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    pids_limit: 512
+    restart: unless-stopped
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - "Promise.all([fetch('http://127.0.0.1:3080/'), fetch('http://127.0.0.1:6080/vnc.html'), fetch('http://127.0.0.1:9222/json/version')]).then(([web, desktop, cdp]) => { if (web.status !== 401 || !desktop.ok || !cdp.ok) process.exit(1) }).catch(() => process.exit(1))"
+      interval: 15s
+      timeout: 3s
+      start_period: 60s
+      retries: 5

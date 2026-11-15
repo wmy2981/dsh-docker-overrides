@@ -1,0 +1,5 @@
+Types: deb
+URIs: https://mirrors.aliyun.com/debian-security
+Suites: trixie-security
+Components: main
+Signed-By: /usr/share/keyrings/debian-archive-keyring.pgp
