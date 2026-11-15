@@ -19,7 +19,12 @@ services:
       - ${DSH_BIND_ADDRESS}
     ports:
       - "${DSH_BIND_ADDRESS}:${DSH_PORT}:3080"
-      - "${DSH_BIND_ADDRESS}:${DSH_DESKTOP_PORT}:6080"
+      # 桌面（noVNC）无任何鉴权且 VNC 是无密码模式，绝不能发布到局域网：
+      # 任何能连上的人都能拿到以 node 运行的桌面，从而读取 .dsh 凭据与 ~/.baoyu-skills/.env。
+      # 只绑回环。桌面本身不能关（Xvfb/Chromium/CDP 都在 start_desktop 里），关掉会废掉浏览器自动化。
+      # 宿主机 sshd 已禁用 TCP 转发（AllowTcpForwarding no），所以隧道也不可用；
+      # 确需远程用桌面时，在前面加带 basic auth 与 TLS 的反代转发到 127.0.0.1:${DSH_DESKTOP_PORT}，不要直接发布端口。
+      - "127.0.0.1:${DSH_DESKTOP_PORT}:6080"
     environment:
       HOME: /home/node
       DSH_HOME: /home/node/.dsh

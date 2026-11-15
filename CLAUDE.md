@@ -29,12 +29,12 @@ sudo docker compose logs --no-color deepseek-harness
 
 首次部署或 `.env` 缺失时先 `cp .env.example .env` 并改 `DSH_BIND_ADDRESS`。
 
-验收标准（三项都要过，URL 中的主机换成 `DSH_BIND_ADDRESS`）：
+验收标准（三项都要过，第 2 项的 URL 主机换成 `DSH_BIND_ADDRESS`）：
 
 ```bash
 sudo docker compose --env-file .env config >/dev/null && echo OK
 curl -s -o /dev/null -w '%{http_code}\n' http://192.168.1.100:3081/         # 期望 401
-curl -s -o /dev/null -w '%{http_code}\n' http://192.168.1.100:6081/vnc.html # 期望 200
+curl -s -o /dev/null -w '%{http_code}\n' http://127.0.0.1:6081/vnc.html     # 期望 200（桌面只绑回环）
 ```
 
 `401` 是正常的：Web 首页未带 token 就返回 401。重启后 token 会刷新，从日志 `dsh web:` 那一行取带 token 的完整 URL；token 不要贴到对话或日志里。

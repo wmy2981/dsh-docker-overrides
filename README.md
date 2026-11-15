@@ -58,11 +58,13 @@ sudo docker compose logs --no-color deepseek-harness
 默认按局域网 HTTP 直连设计（示例主机 `192.168.1.100`）：
 
 - Web：`http://192.168.1.100:3081`
-- 桌面：`http://192.168.1.100:6081/vnc.html?autoconnect=1`
+- 桌面：只绑定宿主机回环，局域网不可达，`curl 127.0.0.1:6081/vnc.html` 才是 200。宿主机 sshd 已禁用 TCP 转发（`AllowTcpForwarding no`），所以也不能用 `ssh -L` 隧道；确需远程使用桌面时，在前面加一层带 basic auth 与 TLS 的反向代理转发到 `127.0.0.1:6081`，不要重新直接发布端口。
+
+桌面不能直接关掉（`DSH_DESKTOP_ENABLED=0`）：Xvfb、Chromium 和 CDP `9222` 都在 `start_desktop()` 里，关掉会连带废掉智能体的浏览器自动化。所以做法是保留桌面、只把它的端口留在回环。
 
 首次 Web 地址必须使用启动日志中 `dsh web:` 后带 token 的完整 URL。重启后 token 会刷新，需重新获取；登录后的浏览器 Cookie 可以继续使用。不要把 token 发到公共位置。Compose 通过原镜像提供的 `--trusted-host` 信任 `DSH_BIND_ADDRESS`，解决局域网 API / WebSocket 的 403，不修改源码。
 
-此模式无 TLS，noVNC 无额外认证，只允许可信局域网访问，禁止公网转发。DSH token/cookie 校验仍保留，但不替代传输加密或用户级权限隔离。模型和密钥应在 Web 设置页填写，不要写入 `.env`。
+Web 侧无 TLS，仅 DSH 自身 token/cookie 校验，只允许可信局域网访问，禁止公网转发。反代方式要注意保留 `Upgrade`/`Connection` 头，否则 noVNC 的 `/websockify` 连不上。模型和密钥应在 Web 设置页填写，不要写入 `.env`。
 
 ## 停止与备份
 
