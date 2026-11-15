@@ -11,6 +11,9 @@ services:
       - web
       - --patch
       - /opt/deepseek-harness/web.cordis.patch.yml
+      # 覆盖镜像里的浏览器自动化配置（attach 独占 → 每会话 launch），生效顺序在镜像 patch 之后。
+      - --patch
+      - /opt/deepseek-harness/browser-launch.patch.yml
       - --no-open
       - --trusted-host
       - ${DSH_BIND_ADDRESS}

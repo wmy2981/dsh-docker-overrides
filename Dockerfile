@@ -57,5 +57,11 @@ RUN set -eux; \
     test "$(pnpm config get registry)" = https://registry.npmmirror.com; \
     test "$(go env GOPROXY)" = https://goproxy.cn,direct
 
+# 浏览器自动化覆盖层：把镜像自带的 attach 独占挂载改成每会话 launch，理由见文件内注释。
+# 由 compose 作为第二个 --patch 传入；仓库根没挂载进容器，所以必须留在镜像里。
+COPY config/browser-launch.patch.yml /opt/deepseek-harness/browser-launch.patch.yml
+
+RUN chmod 0644 /opt/deepseek-harness/browser-launch.patch.yml
+
 USER node
 WORKDIR /workspace

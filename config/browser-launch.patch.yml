@@ -1,0 +1,18 @@
+# 浏览器自动化改为"每个会话一个独立 Chromium"。
+#
+# 镜像自带的 /opt/deepseek-harness/web.cordis.patch.yml 用 attach 模式接
+# http://127.0.0.1:9222（VNC 桌面里那个 Chromium）。上游把 attach 硬编码成独占
+# （browser-use-runtime 的 SessionResources: exclusive = mode === 'attach'），
+# 同一时刻只允许一个活动会话拿到 mcp__playwright-mcp__* 工具；其余会话在创建/恢复
+# 时被标记 blocked，静默失去浏览器工具，且后续轮次不会重试。
+#
+# 本文件由 compose 作为第二个 --patch 传入，排在镜像 patch 之后；按 id 覆盖该行，
+# config 是整体替换（不深合并），所以这里要写全 launch 模式需要的字段。
+# 镜像内没有 Playwright 自带的浏览器包，只能用系统 Chromium；headless 下不依赖 X。
+- id: browser-use-playwright-mcp
+  name: '@deepseek-ai/dsh-experimental-browser-use-playwright-mcp'
+  disabled: !!js process.env.DSH_BROWSER_USE_ENABLED === '0' || process.env.DSH_DESKTOP_ENABLED === '0'
+  config:
+    mode: launch
+    headless: true
+    executablePath: /usr/lib/chromium/chromium

@@ -1,7 +1,5 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
-
 ## 这是什么
 
 在宿主机上用 Docker 部署 DSH（DeepSeek）的覆盖层工程：以 `runzhliu/deepseek-harness` market 镜像为基础加装工具和国内镜像源，**不修改 DSH 源码**。容器名 `dsh`，以 UID/GID 1000 的用户 `node` 运行。
@@ -10,9 +8,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## 路径对照
 
-| 用途 | 宿主机 | 容器内 |
-| --- | --- | --- |
-| 仓库根 | 本仓库所在目录 | 未挂载 |
+
+| 用途                               | 宿主机           | 容器内                                        |
+| ---------------------------------- | ---------------- | --------------------------------------------- |
+| 仓库根                             | 本仓库所在目录   | 未挂载                                        |
 | `home/`、`dsh-home/`、`workspace/` | 仓库根下同名目录 | `/home/node`、`/home/node/.dsh`、`/workspace` |
 
 宿主机上 UID 1000 可能显示为其他用户名，容器内同一 UID 是 `node`，不是两套权限。仓库根不在容器挂载范围内，容器内改不到 Dockerfile / compose.yaml / .env。
@@ -55,6 +54,8 @@ curl -s -o /dev/null -w '%{http_code}\n' http://192.168.1.100:6081/vnc.html # �
 改 DSH 插件/服务配置改 `dsh-home/profiles/web/cordis.patch.yml`，**不要**改同目录的 `cordis.yml`（它只是空根，注释已说明）。`dsh-home/profiles/web/package.json` 的 `dsh.profile.bundles` 决定加载哪些 bundle/插件。
 
 镜像内的 `/opt/deepseek-harness/web.cordis.patch.yml` 由 compose 的 `--patch` 传入，不在本仓库里，改动只能通过重建镜像。
+
+`config/browser-launch.patch.yml` 由 Dockerfile 复制到 `/opt/deepseek-harness/`，compose 把它作为第二个 `--patch` 排在镜像那个之后，用同一个 id 覆盖浏览器自动化配置（镜像默认是 attach 接 VNC 桌面浏览器的独占模式，一个会话占住后其它会话拿不到浏览器工具）。改这个文件也要重建镜像。
 
 ## 历史目录
 
