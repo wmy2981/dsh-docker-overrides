@@ -27,7 +27,7 @@ ENV HOME=/home/node \
 
 RUN set -eux; \
     apt-get update; \
-    apt-get install -y --no-install-recommends python3-pip; \
+    apt-get install -y --no-install-recommends python3-pip ffmpeg libavcodec-extra pandoc sqlite3; \
     rm -rf /var/lib/apt/lists/*; \
     curl -fsSL --retry 3 -o /tmp/bun.zip https://registry.npmmirror.com/-/binary/bun/bun-v1.4.4/bun-linux-x64.zip; \
     unzip -q /tmp/bun.zip -d /tmp; \
@@ -53,6 +53,10 @@ RUN set -eux; \
     go version; \
     gh --version; \
     cf --version; \
+    ffmpeg -version | head -1; \
+    ffprobe -version | head -1; \
+    pandoc --version | head -1; \
+    sqlite3 --version; \
     test "$(npm config get registry)" = https://registry.npmmirror.com; \
     test "$(pnpm config get registry)" = https://registry.npmmirror.com; \
     test "$(go env GOPROXY)" = https://goproxy.cn,direct

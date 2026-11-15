@@ -23,6 +23,9 @@
 
 - Bun 1.4.4：npmmirror。
 - pip：apt 阿里云镜像。
+- ffmpeg 7.1.5（含 ffprobe）与 libavcodec-extra：apt 阿里云镜像。
+- pandoc 3.1.11.1：apt 阿里云镜像。
+- sqlite3 3.46.1：apt 阿里云镜像。
 - Go 1.27.4：阿里云，官方 SHA-256 校验。
 - gh 2.104.0：官方最新 Release（部署时），官方 SHA-256 校验。
 - cf 1.0.0-beta.32：`npm install -g`，npmmirror。
@@ -34,7 +37,7 @@
 - pip：`https://mirrors.aliyun.com/pypi/simple/`
 - Go modules：`https://goproxy.cn,direct`，`sum.golang.google.cn`
 
-本地镜像标签为 `local/deepseek-harness:0.2.2-rc.3-r1-market.1-tools.1`。版本已固定，重启不会自动升级工具。
+本地镜像标签为 `local/deepseek-harness:0.2.2-rc.3-r1-market.1-tools.3`。版本已固定，重启不会自动升级工具。
 
 ## 构建与启动
 
