@@ -20,6 +20,9 @@ services:
     environment:
       HOME: /home/node
       DSH_HOME: /home/node/.dsh
+      # 时区：基础镜像内 /etc/localtime 是 UTC 且根文件系统只读改不了，用 TZ 环境变量覆盖。
+      # 用 DSH_ 前缀的理由同下方 XDG 变量：compose 会优先取宿主机同名 shell 变量。
+      TZ: ${DSH_TZ:-Asia/Shanghai}
       DSH_TELEMETRY_DISABLED: "1"
       DSH_DESKTOP_ENABLED: "1"
       DSH_BROWSER_USE_ENABLED: "1"
